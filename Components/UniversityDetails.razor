@@ -1,0 +1,52 @@
+@using UniversityExplorerPortal.Models
+
+@if (University is null || string.IsNullOrWhiteSpace(University.Name))
+{
+    <div class="summary-card empty-state-panel">
+        <p>Select a university to view details.</p>
+    </div>
+}
+else
+{
+    <div class="summary-card university-detail-card">
+        <h3>@University.Name</h3>
+
+        <dl class="detail-list">
+            <div class="detail-row">
+                <dt>Country</dt>
+                <dd>@University.Country</dd>
+            </div>
+            <div class="detail-row">
+                <dt>Website</dt>
+                <dd>
+                    @if (!string.IsNullOrWhiteSpace(University.Website))
+                    {
+                        <a href="@University.Website" target="_blank" rel="noopener noreferrer">@University.Website</a>
+                    }
+                    else
+                    {
+                        <span class="muted-text">Not available</span>
+                    }
+                </dd>
+            </div>
+            <div class="detail-row">
+                <dt>Domain</dt>
+                <dd>@(string.IsNullOrWhiteSpace(University.Domain) ? "Not available" : University.Domain)</dd>
+            </div>
+        </dl>
+
+        <div class="action-row">
+            <a class="btn btn-success" href="@CreateApplicationUrl">Start application</a>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public University? University { get; set; }
+
+    private string CreateApplicationUrl =>
+        string.IsNullOrWhiteSpace(University?.Name)
+            ? "/student-applications/create"
+            : $"/student-applications/create?country={Uri.EscapeDataString(University.Country)}&university={Uri.EscapeDataString(University.Name)}";
+}

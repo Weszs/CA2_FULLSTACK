@@ -1,0 +1,38 @@
+@using UniversityExplorerPortal.Models
+
+@if (Country is not null)
+{
+    <div class="summary-card country-card">
+        <div class="card-header-row">
+            @if (!string.IsNullOrWhiteSpace(Country.FlagUrl))
+            {
+                <img src="@Country.FlagUrl" alt="@Country.Name flag" class="country-flag" />
+            }
+            else if (!string.IsNullOrWhiteSpace(Country.Flag))
+            {
+                <span class="country-flag-emoji">@Country.Flag</span>
+            }
+            <h3>@Country.Name</h3>
+        </div>
+
+        <dl class="detail-list">
+            <div class="detail-row">
+                <dt>Capital</dt>
+                <dd>@(string.IsNullOrWhiteSpace(Country.Capital) ? "Not available" : Country.Capital)</dd>
+            </div>
+            <div class="detail-row">
+                <dt>Region</dt>
+                <dd>@(string.IsNullOrWhiteSpace(Country.Region) ? "Not available" : Country.Region)</dd>
+            </div>
+            <div class="detail-row">
+                <dt>Population</dt>
+                <dd>@Country.Population.ToString("N0")</dd>
+            </div>
+        </dl>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Country? Country { get; set; }
+}

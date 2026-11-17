@@ -1,0 +1,42 @@
+@using UniversityExplorerPortal.Models
+
+<div class="summary-card university-card @(IsSelected ? "selected" : string.Empty)">
+    <div class="card-header-row">
+        <div>
+            <h4>@(string.IsNullOrWhiteSpace(University.Name) ? "Unnamed university" : University.Name)</h4>
+            <p class="muted-text">@University.Country</p>
+        </div>
+    </div>
+
+    <p>
+        <strong>Website:</strong>
+        @if (!string.IsNullOrWhiteSpace(University.Website))
+        {
+            <a href="@University.Website" target="_blank" rel="noopener noreferrer">@University.Website</a>
+        }
+        else
+        {
+            <span class="muted-text">Not available</span>
+        }
+    </p>
+
+    <button class="btn @(IsSelected ? "btn-success" : "btn-primary")" type="button" @onclick="OnSelectUniversity">
+        @(IsSelected ? "Viewing details" : "View details")
+    </button>
+</div>
+
+@code {
+    [Parameter]
+    public University University { get; set; } = new();
+
+    [Parameter]
+    public bool IsSelected { get; set; }
+
+    [Parameter]
+    public EventCallback<University> OnSelect { get; set; }
+
+    private Task OnSelectUniversity()
+    {
+        return OnSelect.InvokeAsync(University);
+    }
+}
