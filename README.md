@@ -65,3 +65,8 @@ The details panel on the right of the University Explorer screenshot above shows
 
 ### Edit Application page (PUT)
 ![Edit Application](screenshots/edit-application.png)
+
+### Error handling state
+Shown when the Universities API cannot be reached (for example, when offline).
+
+![Error state](screenshots/error-state.png)
