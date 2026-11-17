@@ -37,3 +37,28 @@ cd UniversityExplorerPortal
 ```
 
 Then open the local URL shown by the console, typically `http://localhost:5000` or another port chosen by ASP.NET Core.
+
+## Screenshots
+
+### Home page
+![Home page](screenshots/home.png)
+
+### University Explorer page
+![University Explorer](screenshots/university-explorer.png)
+
+### Country selected and details displayed
+![Country dropdown](screenshots/country-dropdown.png)
+
+![Country details](screenshots/country-details.png)
+
+### University search
+![University search](screenshots/university-search.png)
+
+### University details displayed
+The details panel on the right of the University Explorer screenshot above shows the selected university (name, country, website and domain).
+
+### Student Applications page (GET)
+![Student Applications](screenshots/student-applications.png)
+
+### Create Student Application page (POST)
+![Create Student Application](screenshots/create-application.png)
