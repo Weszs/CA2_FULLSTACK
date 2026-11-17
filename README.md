@@ -62,3 +62,6 @@ The details panel on the right of the University Explorer screenshot above shows
 
 ### Create Student Application page (POST)
 ![Create Student Application](screenshots/create-application.png)
+
+### Edit Application page (PUT)
+![Edit Application](screenshots/edit-application.png)
