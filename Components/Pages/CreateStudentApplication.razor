@@ -1,0 +1,78 @@
+@page "/student-applications/create"
+@using Microsoft.AspNetCore.WebUtilities
+@using UniversityExplorerPortal.Models
+@using UniversityExplorerPortal.Services
+@inject StudentApplicationService StudentApplicationService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create Student Application</PageTitle>
+
+<div class="page-header mb-4">
+    <h1>Create Student Application</h1>
+    <p>Submit a new application for a university abroad.</p>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(successMessage))
+{
+    <div class="alert alert-success">@successMessage</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+<div class="summary-card">
+    <StudentApplicationForm Model="FormModel" OnSubmit="HandleSubmitAsync" IsSubmitting="isSubmitting" SubmitLabel="Create application" />
+</div>
+
+@code {
+    private StudentApplicationFormModel FormModel { get; set; } = new();
+    private bool isSubmitting;
+    private string? successMessage;
+    private string? errorMessage;
+
+    protected override void OnParametersSet()
+    {
+        var query = QueryHelpers.ParseQuery(new Uri(NavigationManager.Uri).Query);
+
+        if (query.TryGetValue("country", out var country) && string.IsNullOrWhiteSpace(FormModel.Country))
+        {
+            FormModel.Country = country.ToString();
+        }
+
+        if (query.TryGetValue("university", out var university) && string.IsNullOrWhiteSpace(FormModel.UniversityName))
+        {
+            FormModel.UniversityName = university.ToString();
+        }
+    }
+
+    private async Task HandleSubmitAsync(StudentApplicationFormModel model)
+    {
+        isSubmitting = true;
+        errorMessage = null;
+        successMessage = null;
+
+        try
+        {
+            var created = await StudentApplicationService.CreateApplicationAsync(model.ToRequest());
+            if (!created)
+            {
+                errorMessage = "Unable to create the student application. Please try again.";
+                return;
+            }
+
+            successMessage = "Application created successfully.";
+            await Task.Delay(300);
+            NavigationManager.NavigateTo("/student-applications");
+        }
+        catch (Exception)
+        {
+            errorMessage = "Something went wrong while creating the application.";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+}

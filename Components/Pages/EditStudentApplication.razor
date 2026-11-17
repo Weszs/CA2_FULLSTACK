@@ -1,0 +1,98 @@
+@page "/student-applications/edit/{Id:int}"
+@using UniversityExplorerPortal.Models
+@using UniversityExplorerPortal.Services
+@inject StudentApplicationService StudentApplicationService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit Student Application</PageTitle>
+
+<div class="page-header mb-4">
+    <h1>Edit Student Application</h1>
+    <p>Update the selected application details.</p>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+@if (isLoading)
+{
+    <div class="loading-state">Loading application...</div>
+}
+else if (FormModel is not null)
+{
+    <div class="summary-card">
+        <StudentApplicationForm Model="FormModel" OnSubmit="HandleSubmitAsync" IsSubmitting="isSubmitting" SubmitLabel="Update application" />
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private StudentApplicationFormModel FormModel { get; set; } = new();
+    private bool isLoading = true;
+    private bool isSubmitting;
+    private string? errorMessage;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            var application = await StudentApplicationService.GetApplicationByIdAsync(Id);
+            if (application is null)
+            {
+                errorMessage = "The requested application could not be found.";
+                return;
+            }
+
+            FormModel = new StudentApplicationFormModel
+            {
+                StudentName = application.StudentName,
+                Email = application.Email,
+                Country = application.Country,
+                UniversityName = application.UniversityName,
+                CourseName = application.CourseName,
+                ApplicationDate = application.ApplicationDate
+            };
+        }
+        catch (Exception)
+        {
+            errorMessage = "Unable to load the application details.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task HandleSubmitAsync(StudentApplicationFormModel model)
+    {
+        isSubmitting = true;
+        errorMessage = null;
+
+        try
+        {
+            var updated = await StudentApplicationService.UpdateApplicationAsync(Id, model.ToRequest());
+            if (!updated)
+            {
+                errorMessage = "Unable to update this application. Please try again.";
+                return;
+            }
+
+            NavigationManager.NavigateTo("/student-applications");
+        }
+        catch (Exception)
+        {
+            errorMessage = "Something went wrong while updating the application.";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+}

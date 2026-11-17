@@ -1,0 +1,94 @@
+@page "/student-applications"
+@using UniversityExplorerPortal.Models
+@using UniversityExplorerPortal.Services
+@inject StudentApplicationService StudentApplicationService
+
+<PageTitle>Student Applications</PageTitle>
+
+<div class="page-header mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+        <h1>Student Applications</h1>
+        <p>Review, create and update submitted applications.</p>
+    </div>
+    <a class="btn btn-primary" href="/student-applications/create">Create new application</a>
+</div>
+
+@if (isLoading)
+{
+    <div class="loading-state">Loading applications...</div>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+else if (Applications.Count == 0)
+{
+    <div class="empty-state-panel">
+        <p>No applications have been submitted yet.</p>
+        <a class="btn btn-primary" href="/student-applications/create">Create one now</a>
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Student Name</th>
+                    <th>University</th>
+                    <th>Country</th>
+                    <th>Course</th>
+                    <th>Application Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Applications)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.StudentName</td>
+                        <td>@item.UniversityName</td>
+                        <td>@item.Country</td>
+                        <td>@item.CourseName</td>
+                        <td>@(item.ApplicationDate is null ? "N/A" : item.ApplicationDate.Value.ToString("dd MMM yyyy"))</td>
+                        <td>
+                            <a class="btn btn-sm btn-outline-primary" href="/student-applications/edit/@item.Id">Edit</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private List<StudentApplication> Applications { get; set; } = new();
+    private bool isLoading = true;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadApplicationsAsync();
+    }
+
+    private async Task LoadApplicationsAsync()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            Applications = await StudentApplicationService.GetApplicationsAsync();
+        }
+        catch (Exception)
+        {
+            errorMessage = "Unable to retrieve applications. Please try again.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
